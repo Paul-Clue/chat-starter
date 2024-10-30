@@ -1,8 +1,6 @@
 'use client';
 
-import {
-  SidebarProvider
-} from '@/components/ui/sidebar';
+import { SidebarProvider } from '@/components/ui/sidebar';
 import { RedirectToSignIn } from '@clerk/nextjs';
 import { Authenticated, Unauthenticated } from 'convex/react';
 import { DashboardSidebar } from './_components/sidebar';

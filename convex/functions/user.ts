@@ -1,6 +1,10 @@
-import { v } from "convex/values";
-import { internalMutation, MutationCtx, query, QueryCtx } from "../_generated/server";
-
+import { v } from 'convex/values';
+import {
+  internalMutation,
+  MutationCtx,
+  query,
+  QueryCtx,
+} from '../_generated/server';
 
 export const get = query({
   args: {},
@@ -23,7 +27,7 @@ export const upsert = internalMutation({
         image: args.image,
       });
     } else {
-      await ctx.db.insert("users", {
+      await ctx.db.insert('users', {
         username: args.username,
         image: args.image,
         clerkId: args.clerkId,
@@ -44,7 +48,7 @@ export const remove = internalMutation({
   },
 });
 
-const getCurrentUser = async (ctx: QueryCtx | MutationCtx) => {
+export const getCurrentUser = async (ctx: QueryCtx | MutationCtx) => {
   const identity = await ctx.auth.getUserIdentity();
   if (!identity) {
     return null;
@@ -57,7 +61,7 @@ export const getUserByClerkId = async (
   clerkId: string
 ) => {
   return await ctx.db
-    .query("users")
-    .withIndex("by_clerk_id", (q) => q.eq("clerkId", clerkId))
+    .query('users')
+    .withIndex('by_clerk_id', (q) => q.eq('clerkId', clerkId))
     .unique();
 };
