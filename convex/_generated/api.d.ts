@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as functions_dm from "../functions/dm.js";
 import type * as functions_friends from "../functions/friends.js";
 import type * as functions_helpers from "../functions/helpers.js";
 import type * as functions_message from "../functions/message.js";
@@ -28,6 +29,7 @@ import type * as http from "../http.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  "functions/dm": typeof functions_dm;
   "functions/friends": typeof functions_friends;
   "functions/helpers": typeof functions_helpers;
   "functions/message": typeof functions_message;

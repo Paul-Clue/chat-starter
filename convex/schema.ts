@@ -20,10 +20,20 @@ export default defineSchema({
   })
     .index('by_user1_status', ['user1', 'status'])
     .index('by_user2_status', ['user2', 'status']),
+  directMessages: defineTable({}),
+  directMessageMembers: defineTable({
+    directMessage: v.id('directMessages'),
+    user: v.id('users'),
+  })
+    .index('by_user', ['user'])
+    .index('by_direct_message', ['directMessage'])
+    .index('by_direct_message_user', ['directMessage', 'user']),
   messages: defineTable({
-    sender: v.string(),
+    sender: v.id('users'),
     content: v.string(),
-  }),
-  // .searchIndex('search_sender', { searchField: 'sender' })
-  // .searchIndex('search_content', { searchField: 'content' }),
+    directMessage: v.id('directMessages'),
+  })
+    .index('by_direct_message', ['directMessage']),
+    // .searchIndex('search_sender', { searchField: 'sender' })
+    // .searchIndex('search_content', { searchField: 'content' }),
 });
