@@ -12,7 +12,9 @@ export const list = authenticatedQuery({
       .collect();
 
     return await Promise.all(
-      directMessages.map((dm) => getDirectMessage(ctx, { id: dm.directMessage }))
+      directMessages.map((dm) =>
+        getDirectMessage(ctx, { id: dm.directMessage })
+      )
     );
   },
 });
@@ -61,6 +63,18 @@ export const create = authenticatedMutation({
       .withIndex('by_user', (q) => q.eq('user', user._id))
       .collect();
 
+    console.log(
+      'Create Function',
+      'user._id',
+      user._id,
+      'ctx.user._id',
+      ctx.user._id
+    );
+
+    if (user._id === ctx.user._id) {
+      return 'No';
+    }
+
     const directMessage = directMessagesForCurrentUser.find((dm) =>
       directMessagesForOtherUser.find(
         (dm2) => dm2.directMessage === dm.directMessage
@@ -73,16 +87,26 @@ export const create = authenticatedMutation({
 
     const newDirectMessage = await ctx.db.insert('directMessages', {});
 
-    await Promise.all([
-      ctx.db.insert('directMessageMembers', {
-        directMessage: newDirectMessage,
-        user: ctx.user._id,
-      }),
-      ctx.db.insert('directMessageMembers', {
-        directMessage: newDirectMessage,
-        user: user._id,
-      }),
-    ]);
+    // await Promise.all([
+    //   ctx.db.insert('directMessageMembers', {
+    //     directMessage: newDirectMessage,
+    //     user: ctx.user._id,
+    //   }),
+    //   ctx.db.insert('directMessageMembers', {
+    //     directMessage: newDirectMessage,
+    //     user: user._id,
+    //   }),
+    // ]);
+
+    await ctx.db.insert('directMessageMembers', {
+      directMessage: newDirectMessage,
+      user: ctx.user._id,
+    });
+
+    await ctx.db.insert('directMessageMembers', {
+      directMessage: newDirectMessage,
+      user: user._id,
+    });
 
     return newDirectMessage;
   },
@@ -103,6 +127,17 @@ const getDirectMessage = async (
     .withIndex('by_direct_message', (q) => q.eq('directMessage', args.id))
     .filter((q) => q.neq(q.field('user'), ctx.user._id))
     .first();
+
+  const otherMember2 = await ctx.db
+    .query('directMessageMembers')
+    .withIndex('by_direct_message', (q) => q.eq('directMessage', args.id))
+    .filter((q) => q.eq(q.field('user'), ctx.user._id))
+    .first();
+
+  if (otherMember2?.user === ctx.user._id) {
+    const user = await ctx.db.get(otherMember2.user);
+    return { ...dm, user };
+  }
 
   if (!otherMember) {
     throw new Error('Direct message has no other members');

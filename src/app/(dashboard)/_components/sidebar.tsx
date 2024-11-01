@@ -10,7 +10,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarProvider,
 } from '@/components/ui/sidebar';
 import {
   DropdownMenu,
@@ -18,8 +17,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { RedirectToSignIn, SignOutButton } from '@clerk/nextjs';
-import { Authenticated, Unauthenticated, useQuery } from 'convex/react';
+import { SignOutButton } from '@clerk/nextjs';
+import { useQuery } from 'convex/react';
 import { User2Icon } from 'lucide-react';
 import Link from 'next/link';
 import { api } from '../../../../convex/_generated/api';
@@ -27,31 +26,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NewDirectMessage } from './new-direct-message';
 import { usePathname } from 'next/navigation';
 
-const useTestDirectMessages = () => {
-  const user = useQuery(api.functions.user.get);
-  if (!user) return [];
-  return [user, user, user, user, user, user, user, user];
-};
-
-export function DashboardLayout() {
-  return (
-    <>
-      <Authenticated>
-        <SidebarProvider>
-          <DashboardSidebar />
-          {/* <div>{children}</div> */}
-        </SidebarProvider>
-      </Authenticated>
-      <Unauthenticated>
-        <RedirectToSignIn />
-      </Unauthenticated>
-    </>
-  );
-}
-
 export function DashboardSidebar() {
   const user = useQuery(api.functions.user.get);
-  const directMessages = useTestDirectMessages();
+  const directMessages = useQuery(api.functions.dm.list);
   const pathname = usePathname();
 
   if (!user) return null;
@@ -76,17 +53,22 @@ export function DashboardSidebar() {
             <NewDirectMessage />
             <SidebarMenu>
               <SidebarGroupContent>
-                {directMessages.map((directMessage) => (
+                {directMessages?.map((directMessage) => (
                   <SidebarMenuItem key={directMessage._id}>
-                    <SidebarMenuButton asChild isActive={pathname === `/dms/${directMessage._id}`}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === `/dms/${directMessage._id}`}
+                    >
                       <Link href={`/dms/${directMessage._id}`}>
                         <Avatar className='size-6'>
-                          <AvatarImage src={directMessage.image} />
-                        <AvatarFallback>
-                          {directMessage.username[0]}
+                          <AvatarImage src={directMessage.user?.image} />
+                          <AvatarFallback>
+                            {directMessage.user?.username[0]}
                           </AvatarFallback>
                         </Avatar>
-                        <p className='font-medium'>{directMessage.username}</p>
+                        <p className='font-medium'>
+                          {directMessage.user?.username}
+                        </p>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
