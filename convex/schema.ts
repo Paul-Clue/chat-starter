@@ -32,6 +32,7 @@ export default defineSchema({
     sender: v.id('users'),
     content: v.string(),
     directMessage: v.id('directMessages'),
+    attachment: v.optional(v.id('_storage')),
   })
     .index('by_direct_message', ['directMessage']),
     // .searchIndex('search_sender', { searchField: 'sender' })
