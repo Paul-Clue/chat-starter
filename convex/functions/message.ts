@@ -1,5 +1,6 @@
 import { v } from 'convex/values';
 import { authenticatedMutation, authenticatedQuery } from './helpers';
+import { internal } from '../_generated/api';
 
 export const list = authenticatedQuery({
   args: { directMessage: v.id('directMessages') },
@@ -60,6 +61,11 @@ export const create = authenticatedMutation({
     await ctx.db.insert('messages', {
       ...args,
       sender: ctx.user._id,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.functions.typing.remove, {
+      directMessage: args.directMessage,
+      user: ctx.user._id,
     });
   },
 });

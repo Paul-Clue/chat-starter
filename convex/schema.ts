@@ -36,4 +36,11 @@ export default defineSchema({
     .index('by_direct_message', ['directMessage']),
     // .searchIndex('search_sender', { searchField: 'sender' })
     // .searchIndex('search_content', { searchField: 'content' }),
+  typingIndicators: defineTable({
+    user: v.id('users'),
+    directMessage: v.id('directMessages'),
+    expiresAt: v.number(),
+  })
+    .index('by_direct_message', ['directMessage'])
+    .index('by_user_direct_message', ['user', 'directMessage']),
 });
