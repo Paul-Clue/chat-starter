@@ -143,6 +143,7 @@ function MessageInput({
   const generateUploadUrl = useMutation(
     api.functions.message.generateUploadUrl
   );
+  const removeAttachment = useMutation(api.functions.storage.remove);
   const [attachment, setAttachment] = useState<Id<'_storage'>>();
   const [file, setFile] = useState<File>();
   const [isUploading, setIsUploading] = useState(false);
@@ -189,7 +190,22 @@ function MessageInput({
           <span className='sr-only'>Attach</span>
         </Button>
         <div className='flex flex-col flex-1 gap-2'>
-          {file && <ImagePreview file={file} isUploading={isUploading} />}
+          {file && (
+            <ImagePreview
+              file={file}
+              isUploading={isUploading}
+              onDelete={() => {
+                if (attachment) {
+                  removeAttachment({ storageId: attachment });
+                }
+                setAttachment(undefined);
+                setFile(undefined);
+                if (fileInputRef.current) {
+                  fileInputRef.current.value = '';
+                }
+              }}
+            />
+          )}
           <Input
             placeholder='Message'
             value={content}
@@ -219,24 +235,36 @@ function MessageInput({
 function ImagePreview({
   file,
   isUploading,
+  onDelete,
 }: {
   file: File;
   isUploading: boolean;
+  onDelete: () => void;
 }) {
   return (
-    <div className='relative'>
+    <div className='relative size-40 overflow-hidden rounded border group'>
       <Image
         src={URL.createObjectURL(file)}
         width={100}
         height={100}
-        className='rounded border overflow-hidden'
         alt='Attachment Preview'
+        className='group-hover:opacity-70 opacity-100 transition-opacity'
       />
       {isUploading && (
         <div className='absolute inset-0 flex items-center justify-center bg-background/50'>
           <LoaderIcon className='animate-spin size-8' />
         </div>
       )}
+      <Button
+        className='absolute top-2 right-2 group-hover:opacity-100 opacity-0 transition-opacity'
+        type='button'
+        variant='destructive'
+        size='icon'
+        onClick={onDelete}
+      >
+        <TrashIcon className='size-4' />
+        <span className='sr-only'>Delete</span>
+      </Button>
     </div>
   );
 }
