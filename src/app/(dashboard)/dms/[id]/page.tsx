@@ -89,8 +89,14 @@ function MessageItem({ message }: { message: Message }) {
         <p className='text-xs text-muted-foreground'>
           {message.sender?.username ?? 'Deleted User'}
         </p>
-        <p className='text-sm'>{message.content}</p>
-        {message.attachment && (
+        {message.deleted ? (
+          <span>
+            That kind of message is not allowed on this platform. Reason: {message.deletedReason}
+          </span>
+        ) : (
+          <>
+            <p className='text-sm'>{message.content}</p>
+            {message.attachment && (
           <Image
             src={message.attachment}
             width={200}
@@ -98,6 +104,8 @@ function MessageItem({ message }: { message: Message }) {
             className='rounded-md border overflow-hidden'
             alt='Attachment'
           />
+            )}
+          </>
         )}
       </div>
       <MessageActions message={message} />

@@ -33,10 +33,10 @@ export default defineSchema({
     content: v.string(),
     directMessage: v.id('directMessages'),
     attachment: v.optional(v.id('_storage')),
+    deleted: v.optional(v.boolean()),
+    deletedReason: v.optional(v.string()),
   })
     .index('by_direct_message', ['directMessage']),
-    // .searchIndex('search_sender', { searchField: 'sender' })
-    // .searchIndex('search_content', { searchField: 'content' }),
   typingIndicators: defineTable({
     user: v.id('users'),
     directMessage: v.id('directMessages'),

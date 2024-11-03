@@ -39,13 +39,6 @@ export const list = authenticatedQuery({
   },
 });
 
-// export const create = mutation({
-//   args: { sender: v.string(), content: v.string() },
-//   handler: async (ctx, args) => {
-//     await ctx.db.insert('messages', args);
-//   },
-// });
-
 export const create = authenticatedMutation({
   args: {
     content: v.string(),
@@ -63,7 +56,7 @@ export const create = authenticatedMutation({
     if (!member) {
       throw new Error('You are not a member of this direct message');
     }
-    await ctx.db.insert('messages', {
+    const messageId = await ctx.db.insert('messages', {
       ...args,
       sender: ctx.user._id,
       attachment: args.attachment,
@@ -72,6 +65,10 @@ export const create = authenticatedMutation({
     await ctx.scheduler.runAfter(0, internal.functions.typing.remove, {
       directMessage: args.directMessage,
       user: ctx.user._id,
+    });
+
+    await ctx.scheduler.runAfter(0, internal.functions.moderation.run, {
+      id: messageId,
     });
   },
 });
