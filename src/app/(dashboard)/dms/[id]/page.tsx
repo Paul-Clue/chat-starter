@@ -91,19 +91,20 @@ function MessageItem({ message }: { message: Message }) {
         </p>
         {message.deleted ? (
           <span>
-            That kind of message is not allowed on this platform. Reason: {message.deletedReason}
+            That kind of message is not allowed on this platform. Reason:{' '}
+            {message.deletedReason}
           </span>
         ) : (
           <>
             <p className='text-sm'>{message.content}</p>
             {message.attachment && (
-          <Image
-            src={message.attachment}
-            width={200}
-            height={200}
-            className='rounded-md border overflow-hidden'
-            alt='Attachment'
-          />
+              <Image
+                src={message.attachment}
+                width={200}
+                height={200}
+                className='rounded-md border overflow-hidden'
+                alt='Attachment'
+              />
             )}
           </>
         )}

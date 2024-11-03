@@ -1,6 +1,5 @@
-import { v } from "convex/values";
-import { authenticatedMutation } from "./helpers";
-
+import { v } from 'convex/values';
+import { authenticatedMutation } from './helpers';
 
 export const remove = authenticatedMutation({
   args: {

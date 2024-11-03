@@ -35,8 +35,7 @@ export default defineSchema({
     attachment: v.optional(v.id('_storage')),
     deleted: v.optional(v.boolean()),
     deletedReason: v.optional(v.string()),
-  })
-    .index('by_direct_message', ['directMessage']),
+  }).index('by_direct_message', ['directMessage']),
   typingIndicators: defineTable({
     user: v.id('users'),
     directMessage: v.id('directMessages'),

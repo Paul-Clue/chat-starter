@@ -17,17 +17,6 @@ export const authenticatedQuery = customQuery(
   })
 );
 
-// export const authenticateMutation = customQuery(
-//   query,
-//   customCtx(async (ctx) => {
-//     const user = await getCurrentUser(ctx);
-//     if (!user) {
-//       throw new Error('Unauthorized');
-//     }
-//     return user;
-//   })
-// );
-
 export const authenticatedMutation = customMutation(
   mutation,
   customCtx(async (ctx) => {
